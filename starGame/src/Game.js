@@ -7,29 +7,44 @@ class Game extends Component {
     this.state =
     {
       numberOfStars : Math.floor(Math.random() * 9) + 1,
-      selectedNumbers: []
+      selectedNumbers: [],
+      correct: null
     }
     // This binding is necessary to make `this` work in the callback
     this.selectNumber = this.selectNumber.bind(this);
     this.unSelectNumber = this.unSelectNumber.bind(this);
+    this.checkAnswer = this.checkAnswer.bind(this);
   };
 
   selectNumber(numberClicked){
-    if(this.state.selectedNumbers.indexOf(numberClicked) >= 0){
-      return;
+    if(this.state.selectedNumbers.indexOf(numberClicked) < 0){
+      this.setState(prevState => ({
+        selectedNumbers:  prevState.selectedNumbers.concat(numberClicked),
+        correct: null
+      }));
     }
-
-    this.setState(prevState => ({
-      selectedNumbers:  prevState.selectedNumbers.concat(numberClicked)
-    }));
   };
 
   unSelectNumber(numberClicked){
     let selectedNumbers = this.state.selectedNumbers;
     let indexOfNumber = this.state.selectedNumbers.indexOf(numberClicked);
     selectedNumbers.splice(indexOfNumber, 1);
-    this.setState({ selectedNumbers:  selectedNumbers });
+    this.setState({
+        selectedNumbers:  selectedNumbers,
+        correct: null
+      });
   };
+
+  sumOfSelectedNumbers(){
+    return this.state.selectedNumbers.reduce((p,n) => {
+        return p + n;
+    }, 0);
+  }
+
+  checkAnswer(){
+    var correct = (this.state.numberOfStars === this.sumOfSelectedNumbers());
+    this.setState({correct : correct});
+  }
 
   render() {
     let selectedNumbers = this.state.selectedNumbers;
@@ -40,7 +55,10 @@ class Game extends Component {
         <hr/>
         <div className="clearfix">
           <StarsFrame numberOfStars={numberOfStars} />
-          <ButtonFrame selectedNumbers={selectedNumbers}/>
+          <ButtonFrame selectedNumbers={selectedNumbers}
+            correct={this.state.correct}
+            checkAnswer={this.checkAnswer}
+            />
           <AnswerFrame selectedNumbers={selectedNumbers} unSelectNumber={this.unSelectNumber}/>
         </div>
         <NumbersFrame selectedNumbers={selectedNumbers} selectNumber={this.selectNumber} />
@@ -70,10 +88,36 @@ class StarsFrame extends Component{
 
 class ButtonFrame extends Component{
   render(){
-    let disabled = (this.props.selectedNumbers.length === 0);
+    let button;
+    let correct = this.props.correct;
+    switch (correct) {
+      case true:
+      button = (
+        <button className="btn btn-success btn-lg">
+          <span className="glyphicon glyphicon-ok"></span>
+        </button>
+      );
+      break;
+      case false:
+      button = (
+        <button className="btn btn-danger btn-lg">
+          <span className="glyphicon glyphicon-remove"></span>
+        </button>
+      );
+      break;
+      default:
+        let disabled = (this.props.selectedNumbers.length === 0);
+        button = (
+          <button className="btn btn-primary btn-lg"
+             disabled={disabled}
+             onClick={this.props.checkAnswer}>
+            =
+          </button>
+        );
+    }
     return(
       <div id="button-frame">
-        <button className="btn btn-primary btn-lg" disabled={disabled}>=</button>
+        {button}
       </div>
     )
   }
