@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import './Game.css';
+import './game.css';
+import StarsFrame from './frames/starsFrame';
+import ButtonFrame from './frames/buttonFrame';
+import AnswerFrame from './frames/answerFrame';
+import NumbersFrame from './frames/numbersFrame';
+import DoneFrame from './frames/doneFrame';
+
 
 class Game extends Component {
   constructor(props) {
@@ -172,129 +178,6 @@ class Game extends Component {
       </div>
     );
   }
-}
-
-class StarsFrame extends Component{
-  render(){
-    let stars = [];
-    for(let i= 0; i < this.props.numberOfStars; i ++)
-    {
-      stars.push(
-        <span className="glyphicon glyphicon-star" key={i}></span>
-      );
-    }
-    return(
-      <div id="stars-frame">
-        <div className="well">
-          {stars}
-        </div>
-      </div>
-    )
-  }
-};
-
-class ButtonFrame extends Component{
-  render(){
-    let button;
-    let correct = this.props.correct;
-    switch (correct) {
-      case true:
-      button = (
-        <button className="btn btn-success btn-lg"
-          onClick={this.props.acceptAnswer}>
-          <span className="glyphicon glyphicon-ok"></span>
-        </button>
-      );
-      break;
-      case false:
-      button = (
-        <button className="btn btn-danger btn-lg">
-          <span className="glyphicon glyphicon-remove"></span>
-        </button>
-      );
-      break;
-      default:
-        let disabled = (this.props.selectedNumbers.length === 0);
-        button = (
-          <button className="btn btn-primary btn-lg"
-             disabled={disabled}
-             onClick={this.props.checkAnswer}>
-            =
-          </button>
-        );
-    }
-    return(
-      <div id="button-frame">
-        {button}
-        <br/><br/>
-        <button className="btn btn-warning btn-xs"
-          onClick={this.props.redraw}
-          disabled={this.props.redraws === 0}>
-          <span className="glyphicon glyphicon-refresh"></span>
-          &nbsp;
-          {this.props.redraws}
-        </button>
-      </div>
-    )
-  }
-};
-
-class AnswerFrame extends Component{
-  render(){
-    let selectedNumbers = this.props.selectedNumbers.map((i) => {
-      return(
-          <span key={i} className="number" onClick={this.props.unSelectNumber.bind(null, i)}>
-            {i}
-          </span>
-        );
-    });
-    return(
-      <div id="answer-frame">
-        <div className="well">
-          {selectedNumbers}
-        </div>
-      </div>
-    )
-  }
-};
-
-class NumbersFrame extends Component{
-  render(){
-    let numbers = [];
-    let selectedNumbers = this.props.selectedNumbers;
-    let selectNumber = this.props.selectNumber;
-    let usedNumbers = this.props.usedNumbers;
-    for(let i = 1; i <= 9; i++)
-    {
-      let className= "number selected-" + (selectedNumbers.indexOf(i) >= 0);
-      className += " used-" + (usedNumbers.indexOf(i) >=0);
-      numbers.push(
-        <div className={className} key={i} onClick={selectNumber.bind(null, i)}>
-          {i}
-        </div>
-      );
-    }
-    return(
-      <div id="numbers-frame">
-        <div className="well">
-          {numbers}
-        </div>
-      </div>
-    )
-  }
-};
-
-class DoneFrame extends Component{
-  render(){
-    return(
-      <div className="well text-center">
-        <h2>{this.props.doneStatus}</h2>
-        <button className="btn btn-default" onClick={this.props.resetGame}>
-          Play again
-        </button>
-      </div>
-    );
-  };
 };
 
 export default Game;
