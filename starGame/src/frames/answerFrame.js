@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class AnswerFrame extends Component{
-  render(){
-    let selectedNumbers = this.props.selectedNumbers.map((i) => {
+const AnswerFrame = (props) => {
+    let selectedNumbers = props.selectedNumbers.map((i) => {
       return(
-          <span key={i} className="number" onClick={this.props.unSelectNumber.bind(null, i)}>
+          <span key={i} className="number" onClick={props.unSelectNumber.bind(null, i)}>
             {i}
           </span>
         );
@@ -16,7 +15,7 @@ class AnswerFrame extends Component{
         </div>
       </div>
     )
-  }
 };
+
 
 export default AnswerFrame;

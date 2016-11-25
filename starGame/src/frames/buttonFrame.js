@@ -1,14 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class ButtonFrame extends Component{
-  render(){
+const ButtonFrame = (props) => {
     let button;
-    let correct = this.props.correct;
+    let correct = props.correct;
     switch (correct) {
       case true:
       button = (
         <button className="btn btn-success btn-lg"
-          onClick={this.props.acceptAnswer}>
+          onClick={props.acceptAnswer}>
           <span className="glyphicon glyphicon-ok"></span>
         </button>
       );
@@ -20,30 +19,30 @@ class ButtonFrame extends Component{
         </button>
       );
       break;
-      default:
-        let disabled = (this.props.selectedNumbers.length === 0);
-        button = (
-          <button className="btn btn-primary btn-lg"
-             disabled={disabled}
-             onClick={this.props.checkAnswer}>
-            =
-          </button>
-        );
-    }
-    return(
-      <div id="button-frame">
-        {button}
-        <br/><br/>
-        <button className="btn btn-warning btn-xs"
-          onClick={this.props.redraw}
-          disabled={this.props.redraws === 0}>
-          <span className="glyphicon glyphicon-refresh"></span>
-          &nbsp;
-          {this.props.redraws}
+    default:
+      let disabled = (props.selectedNumbers.length === 0);
+      button = (
+        <button className="btn btn-primary btn-lg"
+           disabled={disabled}
+           onClick={props.checkAnswer}>
+          =
         </button>
-      </div>
-    )
-  }
+      );
+  };
+
+  return(
+    <div id="button-frame">
+      {button}
+      <br/><br/>
+      <button className="btn btn-warning btn-xs"
+        onClick={props.redraw}
+        disabled={props.redraws === 0}>
+        <span className="glyphicon glyphicon-refresh"></span>
+        &nbsp;
+        {props.redraws}
+      </button>
+    </div>
+  );
 };
 
 export default ButtonFrame;
