@@ -32,16 +32,18 @@ class Game extends Component {
   };
 
   render() {
+    let selectedNumbers = this.state.selectedNumbers;
+    let numberOfStars = this.state.numberOfStars;
     return (
       <div id="game">
         <h2>Play Nine</h2>
         <hr/>
         <div className="clearfix">
-          <StarsFrame numberOfStars={this.state.numberOfStars} />
-          <ButtonFrame/>
-          <AnswerFrame selectedNumbers={this.state.selectedNumbers} unSelectNumber={this.unSelectNumber}/>
+          <StarsFrame numberOfStars={numberOfStars} />
+          <ButtonFrame selectedNumbers={selectedNumbers}/>
+          <AnswerFrame selectedNumbers={selectedNumbers} unSelectNumber={this.unSelectNumber}/>
         </div>
-        <NumbersFrame selectedNumbers={this.state.selectedNumbers} selectNumber={this.selectNumber} />
+        <NumbersFrame selectedNumbers={selectedNumbers} selectNumber={this.selectNumber} />
       </div>
     );
   }
@@ -68,9 +70,10 @@ class StarsFrame extends Component{
 
 class ButtonFrame extends Component{
   render(){
+    let disabled = (this.props.selectedNumbers.length === 0);
     return(
       <div id="button-frame">
-        <button className="btn btn-primary btn-lg">=</button>
+        <button className="btn btn-primary btn-lg" disabled={disabled}>=</button>
       </div>
     )
   }
