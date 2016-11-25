@@ -158,6 +158,7 @@ class Game extends Component {
         <NumbersFrame selectedNumbers={selectedNumbers} selectNumber={this.selectNumber} usedNumbers={usedNumbers} />
       );
     }
+    
     return (
       <div id="game">
         <h2>Play Nine</h2>
