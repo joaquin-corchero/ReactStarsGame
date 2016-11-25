@@ -8,12 +8,14 @@ class Game extends Component {
     {
       numberOfStars : Math.floor(Math.random() * 9) + 1,
       selectedNumbers: [],
-      correct: null
+      correct: null,
+      usedNumbers: []
     }
     // This binding is necessary to make `this` work in the callback
     this.selectNumber = this.selectNumber.bind(this);
     this.unSelectNumber = this.unSelectNumber.bind(this);
     this.checkAnswer = this.checkAnswer.bind(this);
+    this.acceptAnswer = this.acceptAnswer.bind(this);
   };
 
   selectNumber(numberClicked){
@@ -46,9 +48,20 @@ class Game extends Component {
     this.setState({correct : correct});
   }
 
+  acceptAnswer(){
+    var usedNumbers = this.state.usedNumbers.concat(this.state.selectedNumbers);
+    this.setState({
+      selectedNumbers : [],
+      usedNumbers : usedNumbers,
+      correct: null,
+      numberOfStars : Math.floor(Math.random() * 9) + 1,
+    });
+  }
+
   render() {
     let selectedNumbers = this.state.selectedNumbers;
     let numberOfStars = this.state.numberOfStars;
+    let usedNumbers = this.state.usedNumbers;
     return (
       <div id="game">
         <h2>Play Nine</h2>
@@ -58,10 +71,11 @@ class Game extends Component {
           <ButtonFrame selectedNumbers={selectedNumbers}
             correct={this.state.correct}
             checkAnswer={this.checkAnswer}
+            acceptAnswer={this.acceptAnswer}
             />
           <AnswerFrame selectedNumbers={selectedNumbers} unSelectNumber={this.unSelectNumber}/>
         </div>
-        <NumbersFrame selectedNumbers={selectedNumbers} selectNumber={this.selectNumber} />
+        <NumbersFrame selectedNumbers={selectedNumbers} selectNumber={this.selectNumber} usedNumbers={usedNumbers} />
       </div>
     );
   }
@@ -93,7 +107,8 @@ class ButtonFrame extends Component{
     switch (correct) {
       case true:
       button = (
-        <button className="btn btn-success btn-lg">
+        <button className="btn btn-success btn-lg"
+          onClick={this.props.acceptAnswer}>
           <span className="glyphicon glyphicon-ok"></span>
         </button>
       );
@@ -147,9 +162,11 @@ class NumbersFrame extends Component{
     let numbers = [];
     let selectedNumbers = this.props.selectedNumbers;
     let selectNumber = this.props.selectNumber;
+    let usedNumbers = this.props.usedNumbers;
     for(let i = 1; i <= 9; i++)
     {
-      let className= "number selected-" + (selectedNumbers.indexOf(i) >= 0)
+      let className= "number selected-" + (selectedNumbers.indexOf(i) >= 0);
+      className += " used-" + (usedNumbers.indexOf(i) >=0);
       numbers.push(
         <div className={className} key={i} onClick={selectNumber.bind(null, i)}>
           {i}
