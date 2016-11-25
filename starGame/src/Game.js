@@ -5,11 +5,12 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      numberOfStars : Math.floor(Math.random() * 9) + 1,
+      numberOfStars : this.randomNumber(),
       selectedNumbers: [],
       correct: null,
       usedNumbers: [],
-      redraws: 5
+      redraws: 5,
+      doneStatus: null
     };
     // This binding is necessary to make `this` work in the callback
     this.selectNumber = this.selectNumber.bind(this);
@@ -17,6 +18,22 @@ class Game extends Component {
     this.checkAnswer = this.checkAnswer.bind(this);
     this.acceptAnswer = this.acceptAnswer.bind(this);
     this.redraw = this.redraw.bind(this);
+    this.resetGame = this.resetGame.bind(this);
+  };
+
+  resetGame() {
+    this.setState({
+      numberOfStars : this.randomNumber(),
+      selectedNumbers: [],
+      correct: null,
+      usedNumbers: [],
+      redraws: 5,
+      doneStatus: null
+    });
+  };
+
+  randomNumber() {
+    return Math.floor(Math.random() * 9) + 1;
   };
 
   selectNumber(numberClicked) {
@@ -55,7 +72,9 @@ class Game extends Component {
       selectedNumbers : [],
       usedNumbers : usedNumbers,
       correct: null,
-      numberOfStars : Math.floor(Math.random() * 9) + 1,
+      numberOfStars : this.randomNumber()
+    }, () => {
+      this.updateDoneStatus()
     });
   };
 
@@ -64,16 +83,75 @@ class Game extends Component {
       this.setState({
         selectedNumbers : [],
         correct: null,
-        numberOfStars : Math.floor(Math.random() * 9) + 1,
+        numberOfStars : this.randomNumber(),
         redraws: this.state.redraws -1
+      }, () => {
+        this.updateDoneStatus()
       });
     }
+  };
+
+  updateDoneStatus(){
+    if(this.state.usedNumbers.length === 9) {
+      console.log('Done');
+      this.setState({doneStatus: "Done, Nice!!!"});
+      return;
+    }
+
+    if(this.state.redraws === 0 && !this.possibleSolutions()){
+      console.log('game over');
+      this.setState({doneStatus: "Game Over!!!"});
+      return;
+    }
+  };
+
+  possibleSolutions() {
+    let numberOfStars = this.state.numberOfStars,
+      possibleNumbers = [],
+      usedNumbers = this.state.usedNumbers;
+
+    for(let i =1; i <= 9; i++){
+      if(usedNumbers.indexOf(i) < 0){
+        possibleNumbers.push(i);
+      }
+    }
+
+    return this.possibleCombinationSum(possibleNumbers, numberOfStars);
+  }
+
+  possibleCombinationSum(arr, n) {
+    if (arr.indexOf(n) >= 0) { return true; }
+    if (arr[0] > n) { return false; }
+    if (arr[arr.length - 1] > n) {
+      arr.pop();
+      return this.possibleCombinationSum(arr, n);
+    }
+    var listSize = arr.length, combinationsCount = (1 << listSize)
+    for (var i = 1; i < combinationsCount ; i++ ) {
+      var combinationSum = 0;
+      for (var j=0 ; j < listSize ; j++) {
+        if (i & (1 << j)) { combinationSum += arr[j]; }
+      }
+      if (n === combinationSum) { return true; }
+    }
+    return false;
   };
 
   render() {
     let selectedNumbers = this.state.selectedNumbers;
     let numberOfStars = this.state.numberOfStars;
     let usedNumbers = this.state.usedNumbers;
+    let bottomFrame;
+    if(this.state.doneStatus){
+      bottomFrame = (
+        <DoneFrame doneStatus={this.state.doneStatus}
+          resetGame={this.resetGame}/>
+      );
+    }else {
+      bottomFrame = (
+        <NumbersFrame selectedNumbers={selectedNumbers} selectNumber={this.selectNumber} usedNumbers={usedNumbers} />
+      );
+    }
     return (
       <div id="game">
         <h2>Play Nine</h2>
@@ -89,7 +167,8 @@ class Game extends Component {
             />
           <AnswerFrame selectedNumbers={selectedNumbers} unSelectNumber={this.unSelectNumber}/>
         </div>
-        <NumbersFrame selectedNumbers={selectedNumbers} selectNumber={this.selectNumber} usedNumbers={usedNumbers} />
+
+        {bottomFrame}
       </div>
     );
   }
@@ -112,7 +191,7 @@ class StarsFrame extends Component{
       </div>
     )
   }
-}
+};
 
 class ButtonFrame extends Component{
   render(){
@@ -158,7 +237,7 @@ class ButtonFrame extends Component{
       </div>
     )
   }
-}
+};
 
 class AnswerFrame extends Component{
   render(){
@@ -177,7 +256,7 @@ class AnswerFrame extends Component{
       </div>
     )
   }
-}
+};
 
 class NumbersFrame extends Component{
   render(){
@@ -203,6 +282,19 @@ class NumbersFrame extends Component{
       </div>
     )
   }
-}
+};
+
+class DoneFrame extends Component{
+  render(){
+    return(
+      <div className="well text-center">
+        <h2>{this.props.doneStatus}</h2>
+        <button className="btn btn-default" onClick={this.props.resetGame}>
+          Play again
+        </button>
+      </div>
+    );
+  };
+};
 
 export default Game;
